@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Playlist</title>
+    <link rel="preload" as="video" href="./2.mp4" type="video/mp4">
+    <link rel="preload" as="video" href="./reveal.mp4" type="video/mp4">
+    <style>
+        body {
+            background: 000000;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .wrap {
+            width: 500px;
+            height: 500px;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <video id="player" muted autoplay playsinline></video>
+    </div>
+
+    <script>
+        const playlist = ["./1.mp4", "./2.mp4", "./3.mp4","./4.mp4", "./5.mp4", "./6.mp4"];
+        const video = document.getElementById("player");
+        let index = 0;
+
+        function playAt(i) {
+            index = (i + playlist.length) % playlist.length;
+            video.src = playlist[index] + "#t=0";
+            video.load();
+            const p = video.play();
+            if (p && typeof p.catch === "function") {
+                p.catch(() => {
+                    const once = () => { video.play(); document.removeEventListener("click", once); };
+                    document.addEventListener("click", once, { once: true });
+                });
+            }
+        }
+
+        video.addEventListener("ended", () => playAt(index + 1));
+        video.addEventListener("error", () => playAt(index + 1));
+        document.addEventListener("DOMContentLoaded", () => playAt(0));
+    </script>
+</body>
+
+</html>
